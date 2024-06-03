@@ -1,0 +1,109 @@
+{% extends 'quizzes/base.html' %}
+{% load static %}
+{% block content %}
+<title>Quizz - Создать вопрос</title>
+<link rel="stylesheet" type="text/css" href="{% static 'css/quiz/index.css' %}">
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        <div class="question_text_wrapper">
+            <h3 class="question_title">Вопрос {{ question_num }}:</h3>
+            {{ form.question_text }}
+            <p class="choice_label">Таймер:
+                <input type="number" min="0" style="color: black;" name="timeout" value="{{ timeout }}" required=""
+                    id="id_timeout">
+                (0 для бесконечности)
+            </p>
+        </div>
+        <br>
+        <div class="row">
+            <div class="choises">
+                {% for f in choices %}
+                    <div class="choice_text_wrapper">
+                        <div class="choice-form mb-3">
+                            <label for="id_choise_{{ forloop.counter }}">Text:</label>
+                            <input value="{{ f.text }}" type="text" name="choise_{{ forloop.counter }}" class="form-control" style="color: black;" maxlength="500" id="id_choise_{{ forloop.counter }}">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <label for="id_choise_{{ forloop.counter }}_correctness">Correct choice:</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="checkbox" name="choise_{{ forloop.counter }}_correctness" class="form-check-input" id="id_choise_{{ forloop.counter }}_correctness">
+                                    {% if f.correct_choise %}
+                                        <input type="checkbox" name="choise_{{ forloop.counter }}_correctness" class="form-check-input" id="id_choise_{{ forloop.counter }}_correctness" checked>
+                                    {% else %}
+                                        <input type="checkbox" name="choise_{{ forloop.counter }}_correctness" class="form-check-input" id="id_choise_{{ forloop.counter }}_correctness">
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                </div>
+                                <div class="col text-end">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-trash-fill delete-choice" viewBox="0 0 30 30" onclick="del(this)">
+                                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+            <div class="form-row" style="margin-top:60px; justify-content: center; align-items: center;">
+                <button style="width: 40%" type="button" class="btn btn-success interest-list-new"
+                    onclick="addField()">Add Items +</button>
+                <button style="width: 40%" type="button" class="btn btn-success interest-list-new"
+                    onclick="del()">Remove Items -</button>
+            </div>
+        
+            <button type="submit" name="continue" class="btn btn-primary btn-lg">Изменить</button>
+    </div>
+    </form>
+<script>
+    var n;
+
+    function countChoices() {
+        n = document.getElementsByClassName("choice_text_wrapper").length;
+        console.log(n)
+    }
+
+    document.addEventListener("DOMContentLoaded", countChoices);
+
+    function addField() {
+        n += 1;
+        var para = document.createElement("div");
+        para.innerHTML = `<div class="choice_text_wrapper">
+                        <div class="choice-form mb-3">
+                            <label for="id_choise_`+String(n)+`">Text:</label> <input type="text" name="choise_`+String(n)+`" class="form-control" style="color: black;" maxlength="500" id="id_choise_`+String(n)+`">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <label for="id_choise_`+String(n)+`_correctness">Correct choice:</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="checkbox" name="choise_`+String(n)+`_correctness" class="form-check-input" id="id_choise_`+String(n)+`_correctness">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                </div>
+                                <div class="col text-end">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-trash-fill delete-choice" viewBox="0 0 30 30" onclick="del(this)">
+                                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`
+
+        var element = document.getElementsByClassName("choises")[0];
+        element.appendChild(para);
+    };
+    function del() {
+        if (n > 1) {
+            $(".choice_text_wrapper").last().remove();
+            n -= 1;
+        }
+    };
+</script>
+{% endblock %}
